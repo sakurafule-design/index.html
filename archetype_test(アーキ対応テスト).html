@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アーキタイプ診断</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F7F4EF;
+  --ink: #1C1917;
+  --ink-light: #57534E;
+  --ink-faint: #A8A29E;
+  --accent: #7C6A5A;
+  --accent-light: #E8E0D8;
+  --water: #4A7B9D;
+  --earth: #6B7C4A;
+  --wind: #8B6FAE;
+  --fire: #C4622D;
+  --border: #DDD8D0;
+  --radius: 4px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── INTRO ── */
+#intro {
+  min-height: 100vh;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+}
+#intro.active { display: flex; }
+.intro-eyebrow {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+.intro-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 300;
+  line-height: 1.4;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+.intro-title span {
+  display: block;
+  font-size: 0.55em;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  margin-top: 8px;
+}
+.intro-desc {
+  max-width: 520px;
+  color: var(--ink-light);
+  font-size: 14px;
+  line-height: 1.9;
+  margin-bottom: 48px;
+}
+.scale-guide {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 28px;
+  margin-bottom: 48px;
+  max-width: 480px;
+  width: 100%;
+}
+.scale-guide p {
+  font-size: 12px;
+  color: var(--ink-light);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.scale-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.scale-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-light);
+}
+.scale-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500;
+  flex-shrink: 0;
+}
+.btn-start {
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  padding: 16px 48px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-start:hover { background: var(--accent); transform: translateY(-1px); }
+
+/* ── QUIZ ── */
+#quiz {
+  min-height: 100vh;
+  display: none;
+  flex-direction: column;
+}
+#quiz.active { display: flex; }
+.quiz-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.quiz-logo {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+.progress-bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: var(--accent-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.progress-label {
+  font-size: 12px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.quiz-body {
+  flex: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 48px 24px 80px;
+}
+.group-label {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.question-block {
+  margin-bottom: 40px;
+  animation: fadeUp 0.3s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.question-num {
+  font-size: 11px;
+  color: var(--ink-faint);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.question-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.options {
+  display: flex;
+  gap: 8px;
+}
+.opt-btn {
+  flex: 1;
+  padding: 10px 4px;
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  color: var(--ink-light);
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.opt-btn .opt-num {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.opt-btn .opt-label {
+  font-size: 10px;
+  color: var(--ink-faint);
+  text-align: center;
+  line-height: 1.3;
+}
+.opt-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.opt-btn.selected {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
+.opt-btn.selected .opt-num,
+.opt-btn.selected .opt-label { color: white; }
+
+.quiz-footer {
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 24px 48px;
+  display: flex;
+  justify-content: flex-end;
+}
+.btn-next {
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  padding: 14px 36px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.2s;
+  opacity: 0.4;
+  pointer-events: none;
+}
+.btn-next.ready { opacity: 1; pointer-events: auto; }
+.btn-next.ready:hover { background: var(--accent); }
+
+/* ── RESULT ── */
+#result {
+  min-height: 100vh;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+#result.active { display: flex; }
+.result-hero {
+  width: 100%;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 64px 24px 48px;
+  text-align: center;
+}
+.result-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--accent-light);
+  margin-bottom: 20px;
+}
+.result-type-name {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(32px, 7vw, 56px);
+  font-weight: 300;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.result-type-sub {
+  font-size: 13px;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+}
+.result-body {
+  max-width: 680px;
+  width: 100%;
+  padding: 48px 24px 80px;
+}
+.result-section {
+  margin-bottom: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--border);
+}
+.result-section:last-child { border-bottom: none; }
+.result-section-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.result-section-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 22px;
+  font-weight: 400;
+  margin-bottom: 20px;
+  color: var(--ink);
+}
+.result-section-body {
+  color: var(--ink-light);
+  font-size: 15px;
+  line-height: 1.9;
+}
+.result-section-body p { margin-bottom: 16px; }
+.result-section-body p:last-child { margin-bottom: 0; }
+
+.type-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.badge-water { background: #E8F2F8; color: var(--water); }
+.badge-earth { background: #EDF2E6; color: var(--earth); }
+.badge-wind  { background: #F1EDF8; color: var(--wind); }
+.badge-fire  { background: #FAF0EB; color: var(--fire); }
+
+.profile-box {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-top: 32px;
+}
+.profile-box-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+.profile-box-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--ink);
+}
+.btn-retry {
+  display: block;
+  margin: 0 auto;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 12px 32px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.2s;
+  letter-spacing: 0.08em;
+}
+.btn-retry:hover { background: var(--accent); color: white; }
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<section id="intro" class="screen active">
+  <p class="intro-eyebrow">Archetype Diagnosis</p>
+  <h1 class="intro-title">
+    あなたの特性を知る
+    <span>アーキタイプ診断</span>
+  </h1>
+  <p class="intro-desc">
+    28の質問に答えてください。あなたがどんな感じ方をする人か、何に動かされやすいか、そして今どんな時期にいるか——三つの角度から、あなたの特性をお伝えします。<br><br>
+    深く考えすぎず、最初に浮かんだ感覚で選んでください。
+  </p>
+  <div class="scale-guide">
+    <p>回答の基準</p>
+    <div class="scale-row">
+      <div class="scale-item"><span class="scale-num">1</span>まったく当てはまらない</div>
+      <div class="scale-item"><span class="scale-num">2</span>あまり当てはまらない</div>
+      <div class="scale-item"><span class="scale-num">3</span>どちらともいえない</div>
+      <div class="scale-item"><span class="scale-num">4</span>やや当てはまる</div>
+      <div class="scale-item"><span class="scale-num">5</span>非常によく当てはまる</div>
+    </div>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">診断をはじめる</button>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="screen">
+  <header class="quiz-header">
+    <span class="quiz-logo">アーキタイプ診断</span>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+    <span class="progress-label" id="progressLabel">0 / 28</span>
+  </header>
+  <div class="quiz-body" id="quizBody"></div>
+  <div class="quiz-footer">
+    <button class="btn-next" id="btnNext" onclick="nextGroup()">次へ</button>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section id="result" class="screen">
+  <div class="result-hero">
+    <p class="result-eyebrow">あなたの診断結果</p>
+    <div class="result-type-name" id="resTypeName"></div>
+    <div class="result-type-sub" id="resTypeSub"></div>
+  </div>
+  <div class="result-body">
+    <div class="result-section" id="resElementSection">
+      <p class="result-section-label">感受タイプ</p>
+      <div id="resElementBadge"></div>
+      <h2 class="result-section-title" id="resElementTitle"></h2>
+      <div class="result-section-body" id="resElementBody"></div>
+    </div>
+    <div class="result-section" id="resArchSection">
+      <p class="result-section-label">コアの動機パターン</p>
+      <h2 class="result-section-title" id="resArchTitle"></h2>
+      <div class="result-section-body" id="resArchBody"></div>
+    </div>
+    <div class="result-section" id="resPhaseSection">
+      <p class="result-section-label">今いる時期</p>
+      <h2 class="result-section-title" id="resPhaseTitle"></h2>
+      <div class="result-section-body" id="resPhaseBody"></div>
+    </div>
+    <div class="profile-box">
+      <p class="profile-box-label">あなたへのメッセージ</p>
+      <div class="profile-box-text" id="resProfile"></div>
+    </div>
+    <br><br>
+    <button class="btn-retry" onclick="retry()">もう一度診断する</button>
+  </div>
+</section>
+
+<script>
+const QUESTIONS = [
+  { g:'動機・価値観', q:'友人や知人から悩みを打ち明けられることが多い方だ', axisA:'養育者', axisB:'水', axisC:null },
+  { g:'動機・価値観', q:'気になったことは、気が済むまで調べたくなる', axisA:'賢者', axisB:'土', axisC:null },
+  { g:'動機・価値観', q:'自分で何かを作ったり工夫したりすることが好きで、人に見せたくなることがある', axisA:'創造者', axisB:'火', axisC:null },
+  { g:'動機・価値観', q:'同じ環境や同じやり方がずっと続くと、窮屈になってくる', axisA:'探求者', axisB:'風', axisC:null },
+  { g:'動機・価値観', q:'散らかった状況を見ると、整理せずにいられない', axisA:'支配者', axisB:'土', axisC:null },
+  { g:'動機・価値観', q:'不公平な場面を見ると、黙っていられなくなる', axisA:'英雄', axisB:'火', axisC:null },
+  { g:'動機・価値観', q:'表面的な会話より、その人の本音や深いところまで話したくなる', axisA:'恋人', axisB:'水', axisC:null },
+  { g:'動機・価値観', q:'場が沈んでいると、自分が何とかしようとしてしまう', axisA:'道化師', axisB:'風', axisC:null },
+  { g:'感受・反応パターン', q:'映画や本、人の話に感情移入すると、その後もしばらく引きずることがある', axisA:'無垢者', axisB:'水', axisC:null, bMain:true },
+  { g:'感受・反応パターン', q:'相手の気持ちや場の空気を、つい察しすぎてしまうことがある', axisA:'養育者', axisB:'水', axisC:null, bMain:true },
+  { g:'感受・反応パターン', q:'一つのことをじっくり深める方が、あれこれ同時に進めるより性に合っている', axisA:'賢者', axisB:'土', axisC:null, bMain:true },
+  { g:'感受・反応パターン', q:'変化が多すぎると疲れるが、変化がなさすぎても退屈になる', axisA:'探求者', axisB:'風', axisC:null, bMain:true },
+  { g:'感受・反応パターン', q:'美しいものや丁寧に作られたものに触れると、感情が大きく動くことがある', axisA:'創造者', axisB:'土', axisC:null, bMain:true },
+  { g:'感受・反応パターン', q:'やると決めたら、細かいことより先に動いてしまう方だ', axisA:'英雄', axisB:'火', axisC:null, bMain:true },
+  { g:'感受・反応パターン', q:'人と過ごしたあと、楽しかったとしても疲れが出ることが多い', axisA:'道化師', axisB:'風', axisC:null, bMain:true },
+  { g:'感受・反応パターン', q:'誰かとの関係がしっくりきていないと、ずっと気になってしまう', axisA:'恋人', axisB:'水', axisC:null, bMain:true },
+  { g:'現在の内的状態', q:'今まで続けてきたことが、そろそろ変わり目に来ている気がしている', axisA:null, axisB:'水', axisC:'移行期' },
+  { g:'現在の内的状態', q:'新しいことに向かって、少しずつ動き出している感覚がある', axisA:null, axisB:'火', axisC:'構築期' },
+  { g:'現在の内的状態', q:'自分の経験や知識を、誰かのために使いたいと思うようになった', axisA:null, axisB:'土', axisC:'統合期' },
+  { g:'現在の内的状態', q:'今は外より内側、自分のことをじっくり見たい時期だと感じている', axisA:null, axisB:'水', axisC:'深化期' },
+  { g:'現在の内的状態', q:'以前は合っていたと思っていた役割や生き方が、少しずつずれてきた気がする', axisA:null, axisB:'風', axisC:'移行期' },
+  { g:'現在の内的状態', q:'これからの生き方について、以前より真剣に考えるようになった', axisA:null, axisB:'土', axisC:'深化期' },
+  { g:'行動・関係パターン', q:'頼まれると断れず、後から後悔することがある', axisA:'養育者', axisB:null, axisC:'移行期' },
+  { g:'行動・関係パターン', q:'自分のペースを乱されると、思った以上に疲れる', axisA:'賢者', axisB:null, axisC:'深化期' },
+  { g:'行動・関係パターン', q:'いつの間にか自分ばかりが相手に合わせていることが多い', axisA:'恋人', axisB:null, axisC:'移行期' },
+  { g:'行動・関係パターン', q:'全体の見通しが立たないと、動き出しにくい', axisA:'創造者', axisB:null, axisC:'構築期' },
+  { g:'行動・関係パターン', q:'自分の感じていることを、うまく言葉にできないことが多い', axisA:'無垢者', axisB:null, axisC:'深化期' },
+  { g:'行動・関係パターン', q:'一人で静かに過ごす時間がないと、だんだんしんどくなってくる', axisA:'隠者', axisB:null, axisC:'深化期' },
+];
+
+const ELEMENTS = {
+  水: { name:'共感型', sub:'水の元素', badge:'badge-water', color:'var(--water)',
+    body:`<p>あなたは、人の感情や場の空気を、言葉にされる前から感じ取ってしまうことが多い人です。相手が何を感じているか、何を求めているかが、自然と伝わってくる。その感受性の深さは、人と深くつながる力であり、同時に疲れやすさの原因にもなっています。</p><p>日常では、誰かが落ち込んでいると自分まで重くなったり、映画や本の感情をしばらく引きずったりという形で現れます。カウンセリング、ケア、支援など、人の感情に寄り添うことが求められる場面で力を発揮しやすいタイプです。ただし、自分と相手の感情を分ける練習が、長く続けるための鍵になります。</p>` },
+  土: { name:'洞察型', sub:'土の元素', badge:'badge-earth', color:'var(--earth)',
+    body:`<p>あなたは、物事の表面より奥にあるものに目が向く人です。人の言葉の背景、出来事の原因、関係の構造——見えていないものを丁寧に読み解くことが、自然とできます。情報を集めて整理し、本質を見極めるまで時間をかけることを厭わない。その粘り強さと深さが、あなたの大きな特性です。</p><p>日常では、誰かの話を聞きながら「この人が本当に言いたいのは何だろう」と考えていたり、気になったことをとことん調べずにいられなかったりという形で現れます。分析、研究、教育、相談支援など、深く考えることや、一人ひとりに丁寧に向き合うことが求められる場面で力を発揮しやすいタイプです。</p>` },
+  風: { name:'調和型', sub:'風の元素', badge:'badge-wind', color:'var(--wind)',
+    body:`<p>あなたは、場の空気を読み、人と人をつなぐことが自然にできる人です。誰かが孤立していたり、場が沈んでいたりすると、気づかないうちに動いています。変化への適応が早く、異なる考えや立場の間に立って橋渡しをすることも得意です。</p><p>日常では、グループの中で自然とまとめ役になっていたり、その場の流れを読んで動いていたりする形で現れます。コーディネート、ファシリテーション、コミュニティ運営など、人と人をつなぐことや、場を整えることが求められる場面で力を発揮しやすいタイプです。ただし、場に合わせすぎて自分を見失いやすい側面もあります。</p>` },
+  火: { name:'推進型', sub:'火の元素', badge:'badge-fire', color:'var(--fire)',
+    body:`<p>あなたは、やると決めたら動く人です。熱量があり、やりたいことへの衝動が強く、その場のエネルギーを引き上げることが自然にできます。不公平や理不尽に対して黙っていられない正義感も、この特性から来ています。</p><p>日常では、気づいたら先頭に立っていたり、周りが迷っているときに最初に動き出していたりする形で現れます。起業、プロジェクトの立ち上げ、研修や講座の運営など、エネルギーと推進力が必要な場面で力を発揮しやすいタイプです。ただし、動きすぎて燃え尽きやすい傾向もあるため、自分のペースを知ることが重要です。</p>` },
+};
+
+const ARCHETYPES = {
+  養育者: { name:'養育者', body:'あなたの中心にあるのは、人を支えたいという動機です。誰かが困っていると放っておけない、話を聞かずにいられない。その衝動は意識してやっているというより、自然とそうなっている。この動機はあなたの大きな強みですが、同時に自分より他者を優先しすぎる疲れにもつながりやすい。人を支える力を、自分自身にも向けることが、次のテーマになります。' },
+  賢者: { name:'賢者', body:'あなたの中心にあるのは、理解したいという動機です。なぜそうなるのか、本質は何かを知らずにいられない。調べ、考え、深めることに喜びがある。この動機はあなたに深い洞察力をもたらしますが、答えが出るまで動けなくなる傾向もあります。知ることと動くことのバランスが、あなたのテーマです。' },
+  創造者: { name:'創造者', body:'あなたの中心にあるのは、表現したいという動機です。自分の中にあるものを何かの形にして外に出したい、それを誰かに受け取ってもらいたい。この動機はあなたに独自の視点と創造力をもたらします。ただし、完成形へのこだわりが強く、途中で止まってしまうことも。表現し続けることそのものに価値があると気づくことが、あなたのテーマです。' },
+  探求者: { name:'探求者', body:'あなたの中心にあるのは、自由でいたいという動機です。同じ場所に留まり続けることへの抵抗感、新しいものへの好奇心、まだ見ていない場所への引力。この動機はあなたに広い視野と柔軟さをもたらしますが、一つのことに落ち着けない焦りにもなりやすい。自由を求める自分を認めながら、根を張る場所を見つけることがテーマです。' },
+  支配者: { name:'支配者', body:'あなたの中心にあるのは、整えたいという動機です。バラバラなものを秩序立て、混乱した状況を整理し、物事をきちんと機能させることに満足感がある。この動機はあなたに高い組織力と責任感をもたらします。ただし、コントロールできない状況への不安が強くなりやすい。完璧でなくても前に進めるという感覚を育てることがテーマです。' },
+  英雄: { name:'英雄', body:'あなたの中心にあるのは、立ち向かいたいという動機です。不公平を見ると黙っていられない、誰かが傷ついていると守りたくなる。この正義感と行動力はあなたの大きな特性です。ただし、戦い続けることで自分が消耗していることに気づきにくい。力を使う場面と、力を抜く場面を選べるようになることがテーマです。' },
+  恋人: { name:'恋人', body:'あなたの中心にあるのは、深くつながりたいという動機です。表面的な関係より、本音で話せる深いつながりを求めている。誰かとわかり合えたとき、それがどんな出来事よりも記憶に残る。この動機はあなたに深い共感力と誠実さをもたらしますが、相手に合わせすぎる傾向もあります。自分とのつながりを深めることが、次のテーマです。' },
+  道化師: { name:'道化師', body:'あなたの中心にあるのは、場を和ませたいという動機です。重い空気が苦手で、誰かが笑えるように自然と動いてしまう。その軽やかさと柔軟さは、場のエネルギーを変える力があります。ただし、本当の気持ちをユーモアで隠してしまうことも。自分の感情を、笑いに変えずそのまま扱う練習がテーマです。' },
+  無垢者: { name:'無垢者', body:'あなたの中心にあるのは、純粋に感じたいという動機です。物事をフィルターなく受け取り、感動しやすく、傷つきやすい。その感受性の純粋さは、人の心に届く言葉や表現を生み出す力になります。ただし、現実の厳しさに消耗しやすい。感じる力を守りながら、現実と折り合う術を身につけることがテーマです。' },
+  隠者: { name:'隠者', body:'あなたの中心にあるのは、静かに内側を見たいという動機です。一人で考える時間、静かな空間、自分のペース。それが確保されていないと、じわじわと消耗していく。この内省の深さはあなたに豊かな洞察をもたらしますが、孤立しやすくもある。内側を深めながら、外とつながる橋を持つことがテーマです。' },
+  魔術師: { name:'魔術師', body:'あなたの中心にあるのは、変容させたいという動機です。今ある状態を変えたい、可能性を引き出したい、見えていないものを見えるようにしたい。この動機はあなたに変化を起こす力と、直感的な洞察をもたらします。ただし、変えることに集中するあまり、今あるものの価値を見落としやすい。変えることと、受け入れることのバランスがテーマです。' },
+  賢明な老人: { name:'賢明な老人', body:'あなたの中心にあるのは、導きたいという動機です。自分が経験してきたことを、誰かの役に立てたい。答えを与えるより、その人が自分で気づけるよう支えたい。この動機はあなたに深い知恵と忍耐力をもたらします。ただし、導こうとするあまり、相手の自律を妨げることも。寄り添いながら手放す力を育てることがテーマです。' },
+};
+
+const PHASES = {
+  移行期: { name:'移行期', body:'今のあなたは、これまでの自分から次の自分へと移り変わる時期にいます。長く続けてきたことや、当たり前だと思っていた役割や生き方が、少しずつしっくりこなくなってきている。それは何かがおかしくなったのではなく、次のステージに向けて内側が準備を始めているサインです。この時期は、答えを急がず、自分の中で起きていることをただ感じることが大切です。', bridge:'自分が変わっていく時期だからこそ、自分の特性を改めて知ることが力になります。このプログラムは、その整理を一緒にする場です。' },
+  構築期: { name:'構築期', body:'今のあなたは、新しい何かを少しずつ形にしていく時期にいます。まだ全体像は見えていないかもしれませんが、動き出すエネルギーが戻ってきている。この時期は、完璧な計画より、小さな一歩を積み重ねることの方が力になります。動きながら方向が定まっていく、そういう時期です。', bridge:'動き出そうとしているこの時期に、自分の特性を知ることは、方向を定める羅針盤になります。このプログラムは、その土台を作る場です。' },
+  統合期: { name:'統合期', body:'今のあなたは、これまで積み重ねてきたものが、一つにまとまっていく時期にいます。経験、学び、失敗、気づき——それらがバラバラだったものが、「自分らしい形」として見えてくる。この時期は、自分の中にすでにあるものを信頼することが、次への扉を開きます。誰かのために使いたいという気持ちが出てくるのも、この時期の自然な流れです。', bridge:'これまでの自分を一つにまとめていくこの時期に、自分の特性を意識的に使えるようになることが、次の扉を開きます。このプログラムは、その力を形にする場です。' },
+  深化期: { name:'深化期', body:'今のあなたは、外側より内側に向かう時期にいます。これからどう生きるか、自分にとって本当に大切なものは何か、という問いが近くなっている。この時期は、答えを出すより、問いと一緒にいることに意味があります。静かに自分と向き合う時間が、今のあなたには何より必要です。', bridge:'内側を深めているこの時期だからこそ、自分の特性と向き合うことに意味があります。このプログラムは、その探求を支える場です。' },
+};
+
+let answers = new Array(28).fill(0);
+let currentGroup = 0;
+
+const groups = [
+  { label:'グループ1：動機・価値観', indices:[0,1,2,3,4,5,6,7] },
+  { label:'グループ2：感受・反応パターン', indices:[8,9,10,11,12,13,14,15] },
+  { label:'グループ3：現在の内的状態', indices:[16,17,18,19,20,21] },
+  { label:'グループ4：行動・関係パターン', indices:[22,23,24,25,26,27] },
+];
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  currentGroup = 0;
+  answers = new Array(28).fill(0);
+  renderGroup();
+  showScreen('quiz');
+}
+
+function renderGroup() {
+  const g = groups[currentGroup];
+  const body = document.getElementById('quizBody');
+  const answered = answers.filter(a => a > 0).length;
+  document.getElementById('progressBar').style.width = (answered / 28 * 100) + '%';
+  document.getElementById('progressLabel').textContent = answered + ' / 28';
+
+  let html = `<p class="group-label">${g.label}</p>`;
+  g.indices.forEach(i => {
+    const q = QUESTIONS[i];
+    html += `<div class="question-block">
+      <p class="question-num">Q${i+1}</p>
+      <p class="question-text">${q.q}</p>
+      <div class="options">`;
+    const labels = ['まったく\n当てはまらない','あまり\n当てはまらない','どちらとも\nいえない','やや\n当てはまる','非常によく\n当てはまる'];
+    for(let v=1;v<=5;v++){
+      const sel = answers[i] === v ? 'selected' : '';
+      html += `<button class="opt-btn ${sel}" onclick="select(${i},${v},this)">
+        <span class="opt-num">${v}</span>
+        <span class="opt-label">${labels[v-1]}</span>
+      </button>`;
+    }
+    html += `</div></div>`;
+  });
+  body.innerHTML = html;
+  checkNext();
+  body.scrollTop = 0;
+  window.scrollTo(0,0);
+}
+
+function select(idx, val, el) {
+  answers[idx] = val;
+  const opts = el.closest('.options').querySelectorAll('.opt-btn');
+  opts.forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  const answered = answers.filter(a => a > 0).length;
+  document.getElementById('progressBar').style.width = (answered / 28 * 100) + '%';
+  document.getElementById('progressLabel').textContent = answered + ' / 28';
+  checkNext();
+}
+
+function checkNext() {
+  const g = groups[currentGroup];
+  const allAnswered = g.indices.every(i => answers[i] > 0);
+  const btn = document.getElementById('btnNext');
+  btn.classList.toggle('ready', allAnswered);
+  btn.textContent = currentGroup < groups.length - 1 ? '次へ' : '結果を見る';
+}
+
+function nextGroup() {
+  if(currentGroup < groups.length - 1) {
+    currentGroup++;
+    renderGroup();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  const scoreA = {}, scoreB = {水:0,土:0,風:0,火:0}, scoreC = {移行期:0,構築期:0,統合期:0,深化期:0};
+  Object.keys(ARCHETYPES).forEach(k => scoreA[k] = 0);
+
+  QUESTIONS.forEach((q, i) => {
+    const v = answers[i];
+    const isG2 = i >= 8 && i <= 15;
+    const isG4 = i >= 22;
+    if(isG2) {
+      if(q.axisB) scoreB[q.axisB] += v * 2;
+      if(q.axisA) scoreA[q.axisA] += v * 1;
+    } else if(isG4) {
+      if(q.axisA) scoreA[q.axisA] += v * 1;
+      if(q.axisC) scoreC[q.axisC] += v * 1;
+    } else {
+      if(q.axisA) scoreA[q.axisA] += v * 2;
+      if(q.axisB) scoreB[q.axisB] += v * 1;
+      if(q.axisC) scoreC[q.axisC] += v * 2;
+    }
+  });
+
+  const topElement = Object.entries(scoreB).sort((a,b)=>b[1]-a[1])[0][0];
+  const topArch = Object.entries(scoreA).sort((a,b)=>b[1]-a[1])[0][0];
+  const topPhase = Object.entries(scoreC).sort((a,b)=>b[1]-a[1])[0][0];
+
+  const el = ELEMENTS[topElement];
+  const arch = ARCHETYPES[topArch];
+  const phase = PHASES[topPhase];
+
+  document.getElementById('resTypeName').textContent = el.name;
+  document.getElementById('resTypeSub').textContent = `${arch.name}の動機 ／ ${phase.name}`;
+  document.getElementById('resElementBadge').innerHTML = `<span class="type-badge ${el.badge}">${el.name}（${el.sub}）</span>`;
+  document.getElementById('resElementTitle').textContent = el.name + 'のあなたへ';
+  document.getElementById('resElementBody').innerHTML = el.body;
+  document.getElementById('resArchTitle').textContent = arch.name + 'の動機';
+  document.getElementById('resArchBody').innerHTML = `<p>${arch.body}</p>`;
+  document.getElementById('resPhaseTitle').textContent = phase.name + 'にいるあなたへ';
+  document.getElementById('resPhaseBody').innerHTML = `<p>${phase.body}</p><p>${phase.bridge}</p>`;
+
+  const profile = `${el.name}であり、${arch.name}の動機を持つあなたが、今${phase.name}という時期にいること——それは偶然ではありません。あなたの感じる力と、人と深く関わりたいという動機が、今まさに方向を探しています。自分の特性を知ることは、これからの歩みを照らす最初の一歩になります。`;
+  document.getElementById('resProfile').textContent = profile;
+
+  showScreen('result');
+  window.scrollTo(0,0);
+}
+
+function retry() {
+  answers = new Array(28).fill(0);
+  currentGroup = 0;
+  showScreen('intro');
+}
+</script>
+</body>
+</html>
