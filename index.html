@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>アーキタイプ診断</title>
+<title>四元素気質診断</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -14,9 +14,13 @@
   --accent: #7C6A5A;
   --accent-light: #E8E0D8;
   --water: #4A7B9D;
+  --water-light: #E8F2F8;
   --earth: #6B7C4A;
+  --earth-light: #EDF2E6;
   --wind: #8B6FAE;
+  --wind-light: #F1EDF8;
   --fire: #C4622D;
+  --fire-light: #FAF0EB;
   --border: #DDD8D0;
   --radius: 4px;
 }
@@ -48,16 +52,14 @@ body {
   font-size: 11px;
   letter-spacing: 0.2em;
   color: var(--accent);
-  text-transform: uppercase;
   margin-bottom: 32px;
 }
 .intro-title {
   font-family: 'Noto Serif JP', serif;
-  font-size: clamp(28px, 6vw, 48px);
+  font-size: clamp(26px, 5vw, 44px);
   font-weight: 300;
   line-height: 1.4;
   margin-bottom: 24px;
-  color: var(--ink);
 }
 .intro-title span {
   display: block;
@@ -90,14 +92,13 @@ body {
 }
 .scale-row {
   display: flex;
+  flex-direction: column;
   gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
 }
 .scale-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 10px;
   font-size: 12px;
   color: var(--ink-light);
 }
@@ -173,7 +174,7 @@ body {
   max-width: 680px;
   margin: 0 auto;
   width: 100%;
-  padding: 48px 24px 80px;
+  padding: 48px 24px 40px;
 }
 .group-label {
   font-size: 11px;
@@ -196,7 +197,6 @@ body {
   font-size: 11px;
   color: var(--ink-faint);
   margin-bottom: 8px;
-  letter-spacing: 0.05em;
 }
 .question-text {
   font-family: 'Noto Serif JP', serif;
@@ -208,7 +208,7 @@ body {
 }
 .options {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 .opt-btn {
   flex: 1;
@@ -218,8 +218,6 @@ body {
   border-radius: var(--radius);
   cursor: pointer;
   font-family: 'Noto Sans JP', sans-serif;
-  font-size: 13px;
-  color: var(--ink-light);
   transition: all 0.15s;
   display: flex;
   flex-direction: column;
@@ -244,7 +242,6 @@ body {
 .opt-btn.selected {
   border-color: var(--accent);
   background: var(--accent);
-  color: white;
 }
 .opt-btn.selected .opt-num,
 .opt-btn.selected .opt-label { color: white; }
@@ -284,15 +281,13 @@ body {
 #result.active { display: flex; }
 .result-hero {
   width: 100%;
-  background: var(--ink);
-  color: var(--cream);
   padding: 64px 24px 48px;
   text-align: center;
 }
 .result-eyebrow {
   font-size: 11px;
   letter-spacing: 0.2em;
-  color: var(--accent-light);
+  color: var(--ink-faint);
   margin-bottom: 20px;
 }
 .result-type-name {
@@ -300,17 +295,24 @@ body {
   font-size: clamp(32px, 7vw, 56px);
   font-weight: 300;
   line-height: 1.3;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 .result-type-sub {
   font-size: 13px;
   color: var(--ink-faint);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
 }
+.sub-type-label {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-top: 8px;
+}
+
 .result-body {
   max-width: 680px;
   width: 100%;
-  padding: 48px 24px 80px;
+  padding: 0 24px 80px;
 }
 .result-section {
   margin-bottom: 48px;
@@ -323,14 +325,7 @@ body {
   letter-spacing: 0.2em;
   color: var(--accent);
   text-transform: uppercase;
-  margin-bottom: 16px;
-}
-.result-section-title {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 22px;
-  font-weight: 400;
   margin-bottom: 20px;
-  color: var(--ink);
 }
 .result-section-body {
   color: var(--ink-light);
@@ -339,40 +334,52 @@ body {
 }
 .result-section-body p { margin-bottom: 16px; }
 .result-section-body p:last-child { margin-bottom: 0; }
-
-.type-badge {
-  display: inline-block;
-  padding: 4px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  margin-bottom: 20px;
-}
-.badge-water { background: #E8F2F8; color: var(--water); }
-.badge-earth { background: #EDF2E6; color: var(--earth); }
-.badge-wind  { background: #F1EDF8; color: var(--wind); }
-.badge-fire  { background: #FAF0EB; color: var(--fire); }
-
-.profile-box {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px;
-  margin-top: 32px;
-}
-.profile-box-label {
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  color: var(--accent);
-  margin-bottom: 16px;
-  text-transform: uppercase;
-}
-.profile-box-text {
+.result-question {
   font-family: 'Noto Serif JP', serif;
-  font-size: 15px;
-  line-height: 1.9;
+  font-size: 16px;
   color: var(--ink);
+  line-height: 1.8;
+  padding: 20px 24px;
+  border-left: 2px solid;
+  margin-top: 24px;
 }
+.score-bar-section {
+  margin-bottom: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--border);
+}
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.score-type-name {
+  font-size: 13px;
+  color: var(--ink);
+  width: 72px;
+  flex-shrink: 0;
+}
+.score-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: var(--accent-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+.score-val {
+  font-size: 12px;
+  color: var(--ink-faint);
+  width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 .btn-retry {
   display: block;
   margin: 0 auto;
@@ -394,13 +401,13 @@ body {
 
 <!-- INTRO -->
 <section id="intro" class="screen active">
-  <p class="intro-eyebrow">Archetype Diagnosis</p>
+  <p class="intro-eyebrow">Element Type Diagnosis</p>
   <h1 class="intro-title">
-    あなたの特性を知る
-    <span>アーキタイプ診断</span>
+    四元素気質診断
+    <span>あなたの感じ方のタイプを知る</span>
   </h1>
   <p class="intro-desc">
-    28の質問に答えてください。あなたがどんな感じ方をする人か、何に動かされやすいか、そして今どんな時期にいるか——三つの角度から、あなたの特性をお伝えします。<br><br>
+    28の質問に答えてください。あなたがどんな感じ方をする人か、何に動かされやすいか——あなたの特性をお伝えします。<br><br>
     深く考えすぎず、最初に浮かんだ感覚で選んでください。
   </p>
   <div class="scale-guide">
@@ -419,7 +426,7 @@ body {
 <!-- QUIZ -->
 <section id="quiz" class="screen">
   <header class="quiz-header">
-    <span class="quiz-logo">アーキタイプ診断</span>
+    <span class="quiz-logo">四元素気質診断</span>
     <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
     <span class="progress-label" id="progressLabel">0 / 28</span>
   </header>
@@ -431,111 +438,111 @@ body {
 
 <!-- RESULT -->
 <section id="result" class="screen">
-  <div class="result-hero">
+  <div class="result-hero" id="resultHero">
     <p class="result-eyebrow">あなたの診断結果</p>
     <div class="result-type-name" id="resTypeName"></div>
     <div class="result-type-sub" id="resTypeSub"></div>
+    <div class="sub-type-label" id="resSubType"></div>
   </div>
   <div class="result-body">
-    <div class="result-section" id="resElementSection">
-      <p class="result-section-label">感受タイプ</p>
-      <div id="resElementBadge"></div>
-      <h2 class="result-section-title" id="resElementTitle"></h2>
-      <div class="result-section-body" id="resElementBody"></div>
+    <div class="score-bar-section">
+      <p class="result-section-label">タイプ別スコア</p>
+      <div id="scoreBars"></div>
     </div>
-    <div class="result-section" id="resArchSection">
-      <p class="result-section-label">コアの動機パターン</p>
-      <h2 class="result-section-title" id="resArchTitle"></h2>
-      <div class="result-section-body" id="resArchBody"></div>
+    <div class="result-section">
+      <p class="result-section-label">あなたの特性</p>
+      <div class="result-section-body" id="resMainBody"></div>
+      <div class="result-question" id="resQuestion"></div>
     </div>
-    <div class="result-section" id="resPhaseSection">
-      <p class="result-section-label">今いる時期</p>
-      <h2 class="result-section-title" id="resPhaseTitle"></h2>
-      <div class="result-section-body" id="resPhaseBody"></div>
+    <div class="result-section" id="resSubSection">
+      <p class="result-section-label">あわせ持つ特性</p>
+      <div class="result-section-body" id="resSubBody"></div>
     </div>
-    <div class="profile-box">
-      <p class="profile-box-label">あなたへのメッセージ</p>
-      <div class="profile-box-text" id="resProfile"></div>
-    </div>
-    <br><br>
     <button class="btn-retry" onclick="retry()">もう一度診断する</button>
   </div>
 </section>
 
 <script>
+const TYPES = {
+  水: {
+    name: '共感型',
+    sub: '水の気質',
+    color: '#4A7B9D',
+    colorLight: '#E8F2F8',
+    hero: '#E8F2F8',
+    body: `<p>あなたは、人の感情や場の空気を、言葉にされる前から感じ取ってしまうことが多い人です。相手が何を感じているか、何を求めているかが、自然と伝わってくる。その感受性の深さは、人と深くつながる力であり、同時に疲れやすさの原因にもなっています。</p><p>日常では、誰かが落ち込んでいると自分まで重くなったり、映画や本の感情をしばらく引きずったりという形で現れます。カウンセリング、ケア、支援など、人の感情に寄り添うことが求められる場面で力を発揮しやすいタイプです。ただし、自分と相手の感情を分ける練習が、長く続けるための鍵になります。</p>`,
+    question: 'あなたの「感じる力」が、自然に活きていたのは、どんな場面でしたか？'
+  },
+  土: {
+    name: '洞察型',
+    sub: '土の気質',
+    color: '#6B7C4A',
+    colorLight: '#EDF2E6',
+    hero: '#EDF2E6',
+    body: `<p>あなたは、物事の表面より奥にあるものに目が向く人です。人の言葉の背景、出来事の原因、関係の構造——見えていないものを丁寧に読み解くことが、自然とできます。納得できるまで調べ、じっくり深めることを厭わない。その粘り強さと深さが、あなたの大きな特性です。</p><p>日常では、気になったことをとことん調べずにいられなかったり、一つのことを長く丁寧に続けていたりする形で現れます。分析、研究、教育、相談支援など、深く考えることや一人ひとりに丁寧に向き合うことが求められる場面で力を発揮しやすいタイプです。</p>`,
+    question: 'あなたの「深く見る力」は、これまでどんな場面で誰かの役に立ちましたか？'
+  },
+  風: {
+    name: '調和型',
+    sub: '風の気質',
+    color: '#8B6FAE',
+    colorLight: '#F1EDF8',
+    hero: '#F1EDF8',
+    body: `<p>あなたは、場の流れや人と人の関係を、頭と直感で自然に読んでいる人です。誰が何を言いたいのか、場がどう動いているのかが、感情より先に情報として入ってくる。その認識の速さと整理する力が、あなたの大きな特性です。</p><p>日常では、話を聞きながら自然と整理していたり、対立している場面で双方の言いたいことが見えてきたりする形で現れます。ファシリテーション、コーディネート、コミュニケーションが求められる場面で力を発揮しやすいタイプです。ただし、場に合わせすぎて自分の感覚を後回しにしやすい面もあります。</p>`,
+    question: 'あなたが「場の流れを読んで動いた」とき、その場はどう変わりましたか？'
+  },
+  火: {
+    name: '推進型',
+    sub: '火の気質',
+    color: '#C4622D',
+    colorLight: '#FAF0EB',
+    hero: '#FAF0EB',
+    body: `<p>あなたは、やると決めたら動く人です。熱量があり、やりたいことへの衝動が強く、その場のエネルギーを引き上げることが自然にできます。不公平や理不尽に対して黙っていられない正義感も、この特性から来ています。</p><p>日常では、気づいたら先頭に立っていたり、周りが迷っているときに最初に動き出していたりする形で現れます。プロジェクトの立ち上げ、研修や講座の運営など、エネルギーと推進力が必要な場面で力を発揮しやすいタイプです。ただし、動きすぎて燃え尽きやすい傾向もあるため、自分のペースを知ることが重要です。</p>`,
+    question: 'あなたの「動く力」が、誰かや何かを動かした瞬間はどんなときでしたか？'
+  }
+};
+
 const QUESTIONS = [
-  { g:'動機・価値観', q:'友人や知人から悩みを打ち明けられることが多い方だ', axisA:'養育者', axisB:'水', axisC:null },
-  { g:'動機・価値観', q:'気になったことは、気が済むまで調べたくなる', axisA:'賢者', axisB:'土', axisC:null },
-  { g:'動機・価値観', q:'自分で何かを作ったり工夫したりすることが好きで、人に見せたくなることがある', axisA:'創造者', axisB:'火', axisC:null },
-  { g:'動機・価値観', q:'同じ環境や同じやり方がずっと続くと、窮屈になってくる', axisA:'探求者', axisB:'風', axisC:null },
-  { g:'動機・価値観', q:'散らかった状況を見ると、整理せずにいられない', axisA:'支配者', axisB:'土', axisC:null },
-  { g:'動機・価値観', q:'不公平な場面を見ると、黙っていられなくなる', axisA:'英雄', axisB:'火', axisC:null },
-  { g:'動機・価値観', q:'表面的な会話より、その人の本音や深いところまで話したくなる', axisA:'恋人', axisB:'水', axisC:null },
-  { g:'動機・価値観', q:'場が沈んでいると、自分が何とかしようとしてしまう', axisA:'道化師', axisB:'風', axisC:null },
-  { g:'感受・反応パターン', q:'映画や本、人の話に感情移入すると、その後もしばらく引きずることがある', axisA:'無垢者', axisB:'水', axisC:null, bMain:true },
-  { g:'感受・反応パターン', q:'相手の気持ちや場の空気を、つい察しすぎてしまうことがある', axisA:'養育者', axisB:'水', axisC:null, bMain:true },
-  { g:'感受・反応パターン', q:'一つのことをじっくり深める方が、あれこれ同時に進めるより性に合っている', axisA:'賢者', axisB:'土', axisC:null, bMain:true },
-  { g:'感受・反応パターン', q:'変化が多すぎると疲れるが、変化がなさすぎても退屈になる', axisA:'探求者', axisB:'風', axisC:null, bMain:true },
-  { g:'感受・反応パターン', q:'美しいものや丁寧に作られたものに触れると、感情が大きく動くことがある', axisA:'創造者', axisB:'土', axisC:null, bMain:true },
-  { g:'感受・反応パターン', q:'やると決めたら、細かいことより先に動いてしまう方だ', axisA:'英雄', axisB:'火', axisC:null, bMain:true },
-  { g:'感受・反応パターン', q:'人と過ごしたあと、楽しかったとしても疲れが出ることが多い', axisA:'道化師', axisB:'風', axisC:null, bMain:true },
-  { g:'感受・反応パターン', q:'誰かとの関係がしっくりきていないと、ずっと気になってしまう', axisA:'恋人', axisB:'水', axisC:null, bMain:true },
-  { g:'現在の内的状態', q:'今まで続けてきたことが、そろそろ変わり目に来ている気がしている', axisA:null, axisB:'水', axisC:'移行期' },
-  { g:'現在の内的状態', q:'新しいことに向かって、少しずつ動き出している感覚がある', axisA:null, axisB:'火', axisC:'構築期' },
-  { g:'現在の内的状態', q:'自分の経験や知識を、誰かのために使いたいと思うようになった', axisA:null, axisB:'土', axisC:'統合期' },
-  { g:'現在の内的状態', q:'今は外より内側、自分のことをじっくり見たい時期だと感じている', axisA:null, axisB:'水', axisC:'深化期' },
-  { g:'現在の内的状態', q:'以前は合っていたと思っていた役割や生き方が、少しずつずれてきた気がする', axisA:null, axisB:'風', axisC:'移行期' },
-  { g:'現在の内的状態', q:'これからの生き方について、以前より真剣に考えるようになった', axisA:null, axisB:'土', axisC:'深化期' },
-  { g:'行動・関係パターン', q:'頼まれると断れず、後から後悔することがある', axisA:'養育者', axisB:null, axisC:'移行期' },
-  { g:'行動・関係パターン', q:'自分のペースを乱されると、思った以上に疲れる', axisA:'賢者', axisB:null, axisC:'深化期' },
-  { g:'行動・関係パターン', q:'いつの間にか自分ばかりが相手に合わせていることが多い', axisA:'恋人', axisB:null, axisC:'移行期' },
-  { g:'行動・関係パターン', q:'全体の見通しが立たないと、動き出しにくい', axisA:'創造者', axisB:null, axisC:'構築期' },
-  { g:'行動・関係パターン', q:'自分の感じていることを、うまく言葉にできないことが多い', axisA:'無垢者', axisB:null, axisC:'深化期' },
-  { g:'行動・関係パターン', q:'一人で静かに過ごす時間がないと、だんだんしんどくなってくる', axisA:'隠者', axisB:null, axisC:'深化期' },
+  { type:'水', q:'悲しんでいる人の話を聞くと、自分まで悲しくなってくる' },
+  { type:'水', q:'映画や本の登場人物に感情移入すると、終わった後もしばらくその気持ちが残る' },
+  { type:'水', q:'誰かとぶつかったり、関係がギクシャクすると、そのことが頭から離れにくい' },
+  { type:'水', q:'相手が怒っていたり落ち込んでいたりすると、自分も同じような気持ちになってくる' },
+  { type:'水', q:'頼まれると断れず、引き受けてから後悔することがある' },
+  { type:'水', q:'空想や妄想が広がりやすく、気づくと別のことを考えていることがある' },
+  { type:'水', q:'誰かに深くわかってもらえたと感じると、それだけで気持ちが満たされる' },
+  { type:'土', q:'気になったことは、納得できるまで調べずにいられない' },
+  { type:'土', q:'物事の表面より、その背景や原因の方が気になる' },
+  { type:'土', q:'一つのことをじっくり深めることが、あれこれ手を出すより性に合っている' },
+  { type:'土', q:'十分に理解できていないと、なかなか次の行動に移れない' },
+  { type:'土', q:'美しいものや丁寧に作られたものを見ると、感情が大きく動くことがある' },
+  { type:'土', q:'積み重ねてきたものや、長く続けてきたものに、強い愛着がある' },
+  { type:'土', q:'散らかった状況や曖昧なままの物事が、気になって落ち着かない' },
+  { type:'風', q:'話を聞きながら、この人は何を言いたいのかを自然と整理していることがある' },
+  { type:'風', q:'意見が対立している場面で、双方の言いたいことが自然と見えてくる' },
+  { type:'風', q:'無駄な手順や回りくどいやり方が気になって、もっと効率よくできると思うことがある' },
+  { type:'風', q:'言葉にする前に、なんとなくわかるという感覚で動いていることがある' },
+  { type:'風', q:'場が沈んでいたり、誰かが孤立していたりすると、自然と動いてしまう' },
+  { type:'風', q:'情報や知識を集めて、頭の中で整理するのが好きだ' },
+  { type:'風', q:'人と話すとき、言葉そのものより、声のトーンや間の取り方の方が気になることがある' },
+  { type:'火', q:'やると決めたら、細かいことより先に動いてしまう方だ' },
+  { type:'火', q:'不公平な場面や理不尽なことを見ると、黙っていられなくなる' },
+  { type:'火', q:'やりたいことへの衝動が強く、気づくと動き出していることがある' },
+  { type:'火', q:'熱中すると周りが見えなくなるくらい集中してしまうことがある' },
+  { type:'火', q:'頑張りすぎて、あとからどっと疲れが出ることが多い' },
+  { type:'火', q:'自分が正しいと思ったことは、周りに反対されても曲げにくい' },
+  { type:'火', q:'誰かを助けたい、役に立ちたいという気持ちが強く、気づくと先頭に立っていることがある' },
 ];
 
-const ELEMENTS = {
-  水: { name:'共感型', sub:'水の元素', badge:'badge-water', color:'var(--water)',
-    body:`<p>あなたは、人の感情や場の空気を、言葉にされる前から感じ取ってしまうことが多い人です。相手が何を感じているか、何を求めているかが、自然と伝わってくる。その感受性の深さは、人と深くつながる力であり、同時に疲れやすさの原因にもなっています。</p><p>日常では、誰かが落ち込んでいると自分まで重くなったり、映画や本の感情をしばらく引きずったりという形で現れます。カウンセリング、ケア、支援など、人の感情に寄り添うことが求められる場面で力を発揮しやすいタイプです。ただし、自分と相手の感情を分ける練習が、長く続けるための鍵になります。</p>` },
-  土: { name:'洞察型', sub:'土の元素', badge:'badge-earth', color:'var(--earth)',
-    body:`<p>あなたは、物事の表面より奥にあるものに目が向く人です。人の言葉の背景、出来事の原因、関係の構造——見えていないものを丁寧に読み解くことが、自然とできます。情報を集めて整理し、本質を見極めるまで時間をかけることを厭わない。その粘り強さと深さが、あなたの大きな特性です。</p><p>日常では、誰かの話を聞きながら「この人が本当に言いたいのは何だろう」と考えていたり、気になったことをとことん調べずにいられなかったりという形で現れます。分析、研究、教育、相談支援など、深く考えることや、一人ひとりに丁寧に向き合うことが求められる場面で力を発揮しやすいタイプです。</p>` },
-  風: { name:'調和型', sub:'風の元素', badge:'badge-wind', color:'var(--wind)',
-    body:`<p>あなたは、場の空気を読み、人と人をつなぐことが自然にできる人です。誰かが孤立していたり、場が沈んでいたりすると、気づかないうちに動いています。変化への適応が早く、異なる考えや立場の間に立って橋渡しをすることも得意です。</p><p>日常では、グループの中で自然とまとめ役になっていたり、その場の流れを読んで動いていたりする形で現れます。コーディネート、ファシリテーション、コミュニティ運営など、人と人をつなぐことや、場を整えることが求められる場面で力を発揮しやすいタイプです。ただし、場に合わせすぎて自分を見失いやすい側面もあります。</p>` },
-  火: { name:'推進型', sub:'火の元素', badge:'badge-fire', color:'var(--fire)',
-    body:`<p>あなたは、やると決めたら動く人です。熱量があり、やりたいことへの衝動が強く、その場のエネルギーを引き上げることが自然にできます。不公平や理不尽に対して黙っていられない正義感も、この特性から来ています。</p><p>日常では、気づいたら先頭に立っていたり、周りが迷っているときに最初に動き出していたりする形で現れます。起業、プロジェクトの立ち上げ、研修や講座の運営など、エネルギーと推進力が必要な場面で力を発揮しやすいタイプです。ただし、動きすぎて燃え尽きやすい傾向もあるため、自分のペースを知ることが重要です。</p>` },
-};
-
-const ARCHETYPES = {
-  養育者: { name:'養育者', body:'あなたの中心にあるのは、人を支えたいという動機です。誰かが困っていると放っておけない、話を聞かずにいられない。その衝動は意識してやっているというより、自然とそうなっている。この動機はあなたの大きな強みですが、同時に自分より他者を優先しすぎる疲れにもつながりやすい。人を支える力を、自分自身にも向けることが、次のテーマになります。' },
-  賢者: { name:'賢者', body:'あなたの中心にあるのは、理解したいという動機です。なぜそうなるのか、本質は何かを知らずにいられない。調べ、考え、深めることに喜びがある。この動機はあなたに深い洞察力をもたらしますが、答えが出るまで動けなくなる傾向もあります。知ることと動くことのバランスが、あなたのテーマです。' },
-  創造者: { name:'創造者', body:'あなたの中心にあるのは、表現したいという動機です。自分の中にあるものを何かの形にして外に出したい、それを誰かに受け取ってもらいたい。この動機はあなたに独自の視点と創造力をもたらします。ただし、完成形へのこだわりが強く、途中で止まってしまうことも。表現し続けることそのものに価値があると気づくことが、あなたのテーマです。' },
-  探求者: { name:'探求者', body:'あなたの中心にあるのは、自由でいたいという動機です。同じ場所に留まり続けることへの抵抗感、新しいものへの好奇心、まだ見ていない場所への引力。この動機はあなたに広い視野と柔軟さをもたらしますが、一つのことに落ち着けない焦りにもなりやすい。自由を求める自分を認めながら、根を張る場所を見つけることがテーマです。' },
-  支配者: { name:'支配者', body:'あなたの中心にあるのは、整えたいという動機です。バラバラなものを秩序立て、混乱した状況を整理し、物事をきちんと機能させることに満足感がある。この動機はあなたに高い組織力と責任感をもたらします。ただし、コントロールできない状況への不安が強くなりやすい。完璧でなくても前に進めるという感覚を育てることがテーマです。' },
-  英雄: { name:'英雄', body:'あなたの中心にあるのは、立ち向かいたいという動機です。不公平を見ると黙っていられない、誰かが傷ついていると守りたくなる。この正義感と行動力はあなたの大きな特性です。ただし、戦い続けることで自分が消耗していることに気づきにくい。力を使う場面と、力を抜く場面を選べるようになることがテーマです。' },
-  恋人: { name:'恋人', body:'あなたの中心にあるのは、深くつながりたいという動機です。表面的な関係より、本音で話せる深いつながりを求めている。誰かとわかり合えたとき、それがどんな出来事よりも記憶に残る。この動機はあなたに深い共感力と誠実さをもたらしますが、相手に合わせすぎる傾向もあります。自分とのつながりを深めることが、次のテーマです。' },
-  道化師: { name:'道化師', body:'あなたの中心にあるのは、場を和ませたいという動機です。重い空気が苦手で、誰かが笑えるように自然と動いてしまう。その軽やかさと柔軟さは、場のエネルギーを変える力があります。ただし、本当の気持ちをユーモアで隠してしまうことも。自分の感情を、笑いに変えずそのまま扱う練習がテーマです。' },
-  無垢者: { name:'無垢者', body:'あなたの中心にあるのは、純粋に感じたいという動機です。物事をフィルターなく受け取り、感動しやすく、傷つきやすい。その感受性の純粋さは、人の心に届く言葉や表現を生み出す力になります。ただし、現実の厳しさに消耗しやすい。感じる力を守りながら、現実と折り合う術を身につけることがテーマです。' },
-  隠者: { name:'隠者', body:'あなたの中心にあるのは、静かに内側を見たいという動機です。一人で考える時間、静かな空間、自分のペース。それが確保されていないと、じわじわと消耗していく。この内省の深さはあなたに豊かな洞察をもたらしますが、孤立しやすくもある。内側を深めながら、外とつながる橋を持つことがテーマです。' },
-  魔術師: { name:'魔術師', body:'あなたの中心にあるのは、変容させたいという動機です。今ある状態を変えたい、可能性を引き出したい、見えていないものを見えるようにしたい。この動機はあなたに変化を起こす力と、直感的な洞察をもたらします。ただし、変えることに集中するあまり、今あるものの価値を見落としやすい。変えることと、受け入れることのバランスがテーマです。' },
-  賢明な老人: { name:'賢明な老人', body:'あなたの中心にあるのは、導きたいという動機です。自分が経験してきたことを、誰かの役に立てたい。答えを与えるより、その人が自分で気づけるよう支えたい。この動機はあなたに深い知恵と忍耐力をもたらします。ただし、導こうとするあまり、相手の自律を妨げることも。寄り添いながら手放す力を育てることがテーマです。' },
-};
-
-const PHASES = {
-  移行期: { name:'移行期', body:'今のあなたは、これまでの自分から次の自分へと移り変わる時期にいます。長く続けてきたことや、当たり前だと思っていた役割や生き方が、少しずつしっくりこなくなってきている。それは何かがおかしくなったのではなく、次のステージに向けて内側が準備を始めているサインです。この時期は、答えを急がず、自分の中で起きていることをただ感じることが大切です。', bridge:'自分が変わっていく時期だからこそ、自分の特性を改めて知ることが力になります。このプログラムは、その整理を一緒にする場です。' },
-  構築期: { name:'構築期', body:'今のあなたは、新しい何かを少しずつ形にしていく時期にいます。まだ全体像は見えていないかもしれませんが、動き出すエネルギーが戻ってきている。この時期は、完璧な計画より、小さな一歩を積み重ねることの方が力になります。動きながら方向が定まっていく、そういう時期です。', bridge:'動き出そうとしているこの時期に、自分の特性を知ることは、方向を定める羅針盤になります。このプログラムは、その土台を作る場です。' },
-  統合期: { name:'統合期', body:'今のあなたは、これまで積み重ねてきたものが、一つにまとまっていく時期にいます。経験、学び、失敗、気づき——それらがバラバラだったものが、「自分らしい形」として見えてくる。この時期は、自分の中にすでにあるものを信頼することが、次への扉を開きます。誰かのために使いたいという気持ちが出てくるのも、この時期の自然な流れです。', bridge:'これまでの自分を一つにまとめていくこの時期に、自分の特性を意識的に使えるようになることが、次の扉を開きます。このプログラムは、その力を形にする場です。' },
-  深化期: { name:'深化期', body:'今のあなたは、外側より内側に向かう時期にいます。これからどう生きるか、自分にとって本当に大切なものは何か、という問いが近くなっている。この時期は、答えを出すより、問いと一緒にいることに意味があります。静かに自分と向き合う時間が、今のあなたには何より必要です。', bridge:'内側を深めているこの時期だからこそ、自分の特性と向き合うことに意味があります。このプログラムは、その探求を支える場です。' },
-};
+const GROUPS = [
+  { label:'質問 1〜7', indices:[0,1,2,3,4,5,6] },
+  { label:'質問 8〜14', indices:[7,8,9,10,11,12,13] },
+  { label:'質問 15〜21', indices:[14,15,16,17,18,19,20] },
+  { label:'質問 22〜28', indices:[21,22,23,24,25,26,27] },
+];
 
 let answers = new Array(28).fill(0);
 let currentGroup = 0;
-
-const groups = [
-  { label:'グループ1：動機・価値観', indices:[0,1,2,3,4,5,6,7] },
-  { label:'グループ2：感受・反応パターン', indices:[8,9,10,11,12,13,14,15] },
-  { label:'グループ3：現在の内的状態', indices:[16,17,18,19,20,21] },
-  { label:'グループ4：行動・関係パターン', indices:[22,23,24,25,26,27] },
-];
+const OPT_LABELS = ['まったく\n当てはまらない','あまり\n当てはまらない','どちらとも\nいえない','やや\n当てはまる','非常によく\n当てはまる'];
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -550,39 +557,35 @@ function startQuiz() {
 }
 
 function renderGroup() {
-  const g = groups[currentGroup];
-  const body = document.getElementById('quizBody');
+  const g = GROUPS[currentGroup];
   const answered = answers.filter(a => a > 0).length;
   document.getElementById('progressBar').style.width = (answered / 28 * 100) + '%';
   document.getElementById('progressLabel').textContent = answered + ' / 28';
 
   let html = `<p class="group-label">${g.label}</p>`;
   g.indices.forEach(i => {
-    const q = QUESTIONS[i];
     html += `<div class="question-block">
       <p class="question-num">Q${i+1}</p>
-      <p class="question-text">${q.q}</p>
+      <p class="question-text">${QUESTIONS[i].q}</p>
       <div class="options">`;
-    const labels = ['まったく\n当てはまらない','あまり\n当てはまらない','どちらとも\nいえない','やや\n当てはまる','非常によく\n当てはまる'];
     for(let v=1;v<=5;v++){
       const sel = answers[i] === v ? 'selected' : '';
-      html += `<button class="opt-btn ${sel}" onclick="select(${i},${v},this)">
+      html += `<button class="opt-btn ${sel}" onclick="selectAnswer(${i},${v},this)">
         <span class="opt-num">${v}</span>
-        <span class="opt-label">${labels[v-1]}</span>
+        <span class="opt-label">${OPT_LABELS[v-1]}</span>
       </button>`;
     }
     html += `</div></div>`;
   });
-  body.innerHTML = html;
+
+  document.getElementById('quizBody').innerHTML = html;
   checkNext();
-  body.scrollTop = 0;
   window.scrollTo(0,0);
 }
 
-function select(idx, val, el) {
+function selectAnswer(idx, val, el) {
   answers[idx] = val;
-  const opts = el.closest('.options').querySelectorAll('.opt-btn');
-  opts.forEach(b => b.classList.remove('selected'));
+  el.closest('.options').querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   const answered = answers.filter(a => a > 0).length;
   document.getElementById('progressBar').style.width = (answered / 28 * 100) + '%';
@@ -591,15 +594,15 @@ function select(idx, val, el) {
 }
 
 function checkNext() {
-  const g = groups[currentGroup];
+  const g = GROUPS[currentGroup];
   const allAnswered = g.indices.every(i => answers[i] > 0);
   const btn = document.getElementById('btnNext');
   btn.classList.toggle('ready', allAnswered);
-  btn.textContent = currentGroup < groups.length - 1 ? '次へ' : '結果を見る';
+  btn.textContent = currentGroup < GROUPS.length - 1 ? '次へ' : '結果を見る';
 }
 
 function nextGroup() {
-  if(currentGroup < groups.length - 1) {
+  if(currentGroup < GROUPS.length - 1) {
     currentGroup++;
     renderGroup();
   } else {
@@ -608,46 +611,44 @@ function nextGroup() {
 }
 
 function showResult() {
-  const scoreA = {}, scoreB = {水:0,土:0,風:0,火:0}, scoreC = {移行期:0,構築期:0,統合期:0,深化期:0};
-  Object.keys(ARCHETYPES).forEach(k => scoreA[k] = 0);
+  const scores = { 水:0, 土:0, 風:0, 火:0 };
+  QUESTIONS.forEach((q, i) => { scores[q.type] += answers[i]; });
 
-  QUESTIONS.forEach((q, i) => {
-    const v = answers[i];
-    const isG2 = i >= 8 && i <= 15;
-    const isG4 = i >= 22;
-    if(isG2) {
-      if(q.axisB) scoreB[q.axisB] += v * 2;
-      if(q.axisA) scoreA[q.axisA] += v * 1;
-    } else if(isG4) {
-      if(q.axisA) scoreA[q.axisA] += v * 1;
-      if(q.axisC) scoreC[q.axisC] += v * 1;
-    } else {
-      if(q.axisA) scoreA[q.axisA] += v * 2;
-      if(q.axisB) scoreB[q.axisB] += v * 1;
-      if(q.axisC) scoreC[q.axisC] += v * 2;
-    }
+  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  const [mainKey, mainScore] = sorted[0];
+  const [subKey] = sorted[1];
+
+  const main = TYPES[mainKey];
+  const sub = TYPES[subKey];
+  const maxScore = 35;
+
+  document.getElementById('resultHero').style.background = main.hero;
+  document.getElementById('resTypeName').textContent = main.name;
+  document.getElementById('resTypeName').style.color = main.color;
+  document.getElementById('resTypeSub').textContent = main.sub;
+  document.getElementById('resSubType').textContent = `あわせ持つ特性：${sub.name}`;
+
+  let barsHtml = '';
+  sorted.forEach(([key, score]) => {
+    const t = TYPES[key];
+    const pct = Math.round(score / maxScore * 100);
+    barsHtml += `<div class="score-row">
+      <span class="score-type-name">${t.name}</span>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" style="width:${pct}%;background:${t.color}"></div>
+      </div>
+      <span class="score-val">${score}点</span>
+    </div>`;
   });
+  document.getElementById('scoreBars').innerHTML = barsHtml;
 
-  const topElement = Object.entries(scoreB).sort((a,b)=>b[1]-a[1])[0][0];
-  const topArch = Object.entries(scoreA).sort((a,b)=>b[1]-a[1])[0][0];
-  const topPhase = Object.entries(scoreC).sort((a,b)=>b[1]-a[1])[0][0];
+  document.getElementById('resMainBody').innerHTML = main.body;
+  const qEl = document.getElementById('resQuestion');
+  qEl.textContent = main.question;
+  qEl.style.borderColor = main.color;
+  qEl.style.color = main.color;
 
-  const el = ELEMENTS[topElement];
-  const arch = ARCHETYPES[topArch];
-  const phase = PHASES[topPhase];
-
-  document.getElementById('resTypeName').textContent = el.name;
-  document.getElementById('resTypeSub').textContent = `${arch.name}の動機 ／ ${phase.name}`;
-  document.getElementById('resElementBadge').innerHTML = `<span class="type-badge ${el.badge}">${el.name}（${el.sub}）</span>`;
-  document.getElementById('resElementTitle').textContent = el.name + 'のあなたへ';
-  document.getElementById('resElementBody').innerHTML = el.body;
-  document.getElementById('resArchTitle').textContent = arch.name + 'の動機';
-  document.getElementById('resArchBody').innerHTML = `<p>${arch.body}</p>`;
-  document.getElementById('resPhaseTitle').textContent = phase.name + 'にいるあなたへ';
-  document.getElementById('resPhaseBody').innerHTML = `<p>${phase.body}</p><p>${phase.bridge}</p>`;
-
-  const profile = `${el.name}であり、${arch.name}の動機を持つあなたが、今${phase.name}という時期にいること——それは偶然ではありません。あなたの感じる力と、人と深く関わりたいという動機が、今まさに方向を探しています。自分の特性を知ることは、これからの歩みを照らす最初の一歩になります。`;
-  document.getElementById('resProfile').textContent = profile;
+  document.getElementById('resSubBody').innerHTML = sub.body;
 
   showScreen('result');
   window.scrollTo(0,0);
